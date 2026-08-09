@@ -26,7 +26,7 @@ i18n = I18nAuto()
 
 
 def inference_status(title, state, detail=""):
-    lines = ["【%s】" % i18n(title), "%s：%s" % (i18n("状态"), i18n(state))]
+    lines = ["[%s]" % i18n(title), "%s: %s" % (i18n("状态"), i18n(state))]
     if detail:
         lines.extend(["", str(detail).strip()])
     return "\n".join(lines)
@@ -282,15 +282,15 @@ class VC:
             else:
                 tgt_sr = self.tgt_sr
             index_info = (
-                "%s：%s" % (i18n("索引"), file_index)
+                "%s: %s" % (i18n("索引"), file_index)
                 if os.path.exists(file_index)
-                else "%s：%s" % (i18n("索引"), i18n("未使用"))
+                else "%s: %s" % (i18n("索引"), i18n("未使用"))
             )
             return (
                 inference_status(
                     "单次推理",
                     "成功",
-                    "%s\n%s：%s %.2fs | F0 %.2fs | %s %.2fs"
+                    "%s\n%s: %s %.2fs | F0 %.2fs | %s %.2fs"
                     % (
                         index_info,
                         i18n("耗时"),
@@ -408,11 +408,11 @@ class VC:
                         info = "%s\n%s" % (info, traceback.format_exc())
                         failed += 1
                         item_failed = True
-                        failures.append("%s：%s" % (os.path.basename(path), info))
+                        failures.append("%s: %s" % (os.path.basename(path), info))
                 else:
                     failed += 1
                     item_failed = True
-                    failures.append("%s：%s" % (os.path.basename(path), info))
+                    failures.append("%s: %s" % (os.path.basename(path), info))
                 if should_report(idx, total) or item_failed:
                     yield batch_status(
                         i18n("批量推理"),

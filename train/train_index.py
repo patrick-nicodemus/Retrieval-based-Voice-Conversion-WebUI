@@ -46,7 +46,7 @@ def newest_index(pattern):
 def speaker_scope(message, speaker_id):
     if speaker_id is None:
         return message
-    return "%s：%s | %s" % (i18n("说话人ID（0~109）"), speaker_id, message)
+    return "%s: %s | %s" % (i18n("说话人ID（0~109）"), speaker_id, message)
 
 
 def link_added_index(added_path, speaker_id=None):

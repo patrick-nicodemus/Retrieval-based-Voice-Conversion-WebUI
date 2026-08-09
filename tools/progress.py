@@ -23,9 +23,9 @@ def batch_status(title, current, total, success, failed, latest="", failures=Non
     else:
         state = i18n("处理中")
     lines = [
-        "【%s】" % title,
-        "%s：%s" % (i18n("状态"), state),
-        "%s：%s/%s | %s：%s | %s：%s"
+        "[%s]" % title,
+        "%s: %s" % (i18n("状态"), state),
+        "%s: %s/%s | %s: %s | %s: %s"
         % (
             i18n("进度"),
             current,
@@ -37,9 +37,9 @@ def batch_status(title, current, total, success, failed, latest="", failures=Non
         ),
     ]
     if latest:
-        lines.append("%s：%s" % (i18n("当前"), latest))
+        lines.append("%s: %s" % (i18n("当前"), latest))
     if failures:
-        lines.append("%s：" % i18n("失败记录"))
+        lines.append("%s:" % i18n("失败记录"))
         lines.extend(failures[-10:])
         if len(failures) > 10:
             lines.append(i18n("……仅显示最近10条失败记录"))

@@ -637,7 +637,7 @@ def stop_pymss_webui():
 
 
 def format_status(title, state, detail=""):
-    lines = ["【%s】" % i18n(title), "%s：%s" % (i18n("状态"), i18n(state))]
+    lines = ["[%s]" % i18n(title), "%s: %s" % (i18n("状态"), i18n(state))]
     if detail:
         lines.extend(["", detail.strip()])
     return "\n".join(lines)
@@ -648,15 +648,15 @@ def format_workflow_status(step, detail="", completed_steps=None, state="运行�
     detail = str(detail).strip()
     lines = []
     if completed_steps:
-        lines.append("%s：" % i18n("已完成阶段"))
+        lines.append("%s:" % i18n("已完成阶段"))
         lines.extend(
-            "✓ %s：%s" % (i18n(completed_step), i18n("已成功"))
+            "✓ %s: %s" % (i18n(completed_step), i18n("已成功"))
             for completed_step in completed_steps
         )
     if step:
         if lines:
             lines.append("")
-        lines.append("%s：%s" % (i18n("当前阶段"), i18n(step)))
+        lines.append("%s: %s" % (i18n("当前阶段"), i18n(step)))
     if detail:
         lines.extend(["", detail])
     return format_status(
