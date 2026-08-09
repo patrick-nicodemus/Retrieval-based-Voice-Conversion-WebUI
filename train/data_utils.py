@@ -12,6 +12,26 @@ from train.mel_processing import spectrogram_torch
 from train.utils import load_filepaths_and_text, load_wav_to_torch
 
 
+def _spec_length(audiopath, hop_length):
+    """os.path.getsize(), but with a pointer to the README when the file is a missing asset."""
+    try:
+        size = os.path.getsize(audiopath)
+    except FileNotFoundError:
+        if "/mute/" in audiopath.replace("\\", "/"):
+            hint = (
+                "the 'logs/mute/' training-silence assets are missing. Download and extract "
+                "them per the README's 'Model downloads' / 'Required for v1/v2 training' section "
+                "(hf download lj1995/VoiceConversionWebUI mute.zip, then unzip into logs/)"
+            )
+        else:
+            hint = (
+                "this training-set file is missing. Re-run preprocessing / feature extraction "
+                "for this experiment, or check that logs/<experiment>/ was not partially deleted"
+            )
+        raise FileNotFoundError(f"{audiopath} not found: {hint}") from None
+    return size // (3 * hop_length)
+
+
 class TextAudioLoaderMultiNSFsid(torch.utils.data.Dataset):
     """
     1) loads audio, text pairs
@@ -44,7 +64,7 @@ class TextAudioLoaderMultiNSFsid(torch.utils.data.Dataset):
             audiopath, text, pitch, pitchf, dv = record[:5]
             if self.min_text_len <= len(text) and len(text) <= self.max_text_len:
                 audiopaths_and_text_new.append([audiopath, text, pitch, pitchf, dv])
-                lengths.append(os.path.getsize(audiopath) // (3 * self.hop_length))
+                lengths.append(_spec_length(audiopath, self.hop_length))
         self.audiopaths_and_text = audiopaths_and_text_new
         self.lengths = lengths
 
@@ -253,7 +273,7 @@ class TextAudioLoader(torch.utils.data.Dataset):
             audiopath, text, dv = record[:3]
             if self.min_text_len <= len(text) and len(text) <= self.max_text_len:
                 audiopaths_and_text_new.append([audiopath, text, dv])
-                lengths.append(os.path.getsize(audiopath) // (3 * self.hop_length))
+                lengths.append(_spec_length(audiopath, self.hop_length))
         self.audiopaths_and_text = audiopaths_and_text_new
         self.lengths = lengths
 

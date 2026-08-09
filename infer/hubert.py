@@ -7,6 +7,7 @@ from torch import nn
 from transformers import AutoFeatureExtractor, HubertModel
 
 from tools.cuda_graph import run_cuda_graph
+from tools.file_io import require_asset
 
 
 logger = logging.getLogger(__name__)
@@ -30,10 +31,10 @@ def _device_type(device):
 
 def load_hubert_model(device, is_half=False):
     """Load the local Transformers HuBERT/ContentVec model for RVC."""
-    if not (HUBERT_MODEL_PATH / "config.json").is_file():
-        raise FileNotFoundError(
-            f"Transformers HuBERT model not found: {HUBERT_MODEL_PATH}"
-        )
+    require_asset(
+        HUBERT_MODEL_PATH / "config.json",
+        'Run: hf download lj1995/VoiceConversionWebUI --include "hubert_base/*" --local-dir assets',
+    )
 
     dtype = torch.float16 if is_half else torch.float32
     load_options = {

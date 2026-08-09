@@ -60,6 +60,7 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
 from infer.module import commons
+from tools.file_io import require_asset
 from train.data_utils import (
     DistributedBucketSampler,
     TextAudioCollate,
@@ -107,6 +108,10 @@ class EpochRecorder:
 
 
 def load_pretrained_generator(model, path):
+    require_asset(
+        path,
+        'Run: hf download lj1995/VoiceConversionWebUI --include "pretrained/*" "pretrained_v2/*" --local-dir assets',
+    )
     target = model.module if hasattr(model, "module") else model
     saved_state = torch.load(path, map_location="cpu")["model"]
     current_state = target.state_dict()
@@ -265,6 +270,10 @@ def run(rank, n_gpus, hps, logger, use_ddp):
                 logger.info(i18n("已加载生成器预训练模型：%s") % hps.pretrainG)
             logger.info(load_pretrained_generator(net_g, hps.pretrainG))
         if hps.pretrainD != "":
+            require_asset(
+                hps.pretrainD,
+                'Run: hf download lj1995/VoiceConversionWebUI --include "pretrained/*" "pretrained_v2/*" --local-dir assets',
+            )
             if rank == 0:
                 logger.info(i18n("已加载判别器预训练模型：%s") % hps.pretrainD)
             if hasattr(net_d, "module"):

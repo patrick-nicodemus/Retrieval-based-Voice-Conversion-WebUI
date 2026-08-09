@@ -9,6 +9,7 @@ from librosa.util import normalize, pad_center, tiny
 from scipy.signal import get_window
 
 from tools.cuda_graph import run_cuda_graph
+from tools.file_io import require_asset
 
 import logging
 
@@ -512,8 +513,13 @@ class RMVPE:
         if "privateuseone" in str(device):
             import onnxruntime as ort
 
+            onnx_path = os.path.splitext(model_path)[0] + ".onnx"
+            require_asset(
+                onnx_path,
+                "Run: hf download lj1995/VoiceConversionWebUI rmvpe.onnx --local-dir assets/rmvpe",
+            )
             ort_session = ort.InferenceSession(
-                os.path.splitext(model_path)[0] + ".onnx",
+                onnx_path,
                 providers=["DmlExecutionProvider"],
             )
             self.model = ort_session
@@ -522,6 +528,10 @@ class RMVPE:
                 self.device = torch.device("cuda:0")
 
             def get_default_model():
+                require_asset(
+                    model_path,
+                    "Run: hf download lj1995/VoiceConversionWebUI rmvpe.pt --local-dir assets/rmvpe",
+                )
                 model = E2E(4, 1, (2, 2))
                 ckpt = torch.load(model_path, map_location="cpu")
                 model.load_state_dict(ckpt)
